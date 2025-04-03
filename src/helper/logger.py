@@ -65,7 +65,7 @@ def init_logger() -> None:
     """Set the LogFormatter as a formatter for the global logger"""
     logging.basicConfig(
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.INFO,
+        level=logging.DEBUG,
     )
     console = logging.StreamHandler()
     # set a format which is simpler for console use
@@ -75,9 +75,6 @@ def init_logger() -> None:
     )
     # tell the handler to use this format
     console.setFormatter(formatter)
-    console.addFilter(
-        logging.Filter("src")
-    )
     # set to be the only logger
     # Ensure that only one handler is currently configured
     assert len(logging.getLogger("").handlers) == 1

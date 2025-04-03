@@ -34,7 +34,7 @@ class BaseTranscriberAdapter:
         logger.warning("TranscriberAdapter implementation did not provide a _close_stream method. Nothing to close.")
         return True
 
-    def transcribe_bytes(self, audio_bytes: bytes) -> str:
+    async def transcribe_bytes(self, audio_bytes: bytes) -> str | None:
         """
         Transcribes the stream, given the new audio data in bytes format into text. Audio data is expected to be 16 kHz, 16-bit float PCM [-1,1].
         Args:
@@ -43,4 +43,10 @@ class BaseTranscriberAdapter:
             str: The transcribed text from the audio data.
         """
         logger.warning("TranscriberAdapter implementation did not provide a transcribe_bytes method. Cannot transcribe.")
+        raise NotImplementedError
+    
+    def get_final_transcript(self) -> str:
+        """
+        Returns the final transcript after all audio data has been processed.
+        """
         raise NotImplementedError

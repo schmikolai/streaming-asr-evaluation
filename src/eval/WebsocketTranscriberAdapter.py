@@ -81,7 +81,7 @@ class WebsocketTranscriberAdapter(BaseTranscriberAdapter):
         logger.debug(f"Received response from websocket server: '{response}'")
         return response
     
-    def get_final_transcript(self) -> str:
+    def final_transcript(self) -> str:
         """
         Returns the final transcript.
         """

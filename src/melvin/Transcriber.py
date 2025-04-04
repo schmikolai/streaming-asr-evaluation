@@ -81,7 +81,7 @@ class Transcriber:
             num_workers=self._num_workers,
         )
 
-    def _transcribe(
+    def transcribe(
         self,
         audio_chunk: bytes,
         prompt: str = "",

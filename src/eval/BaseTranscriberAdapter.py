@@ -45,7 +45,7 @@ class BaseTranscriberAdapter:
         logger.warning("TranscriberAdapter implementation did not provide a transcribe_bytes method. Cannot transcribe.")
         raise NotImplementedError
     
-    def get_final_transcript(self) -> str:
+    def final_transcript(self) -> str:
         """
         Returns the final transcript after all audio data has been processed.
         """

@@ -35,7 +35,7 @@ class StreamingTranscriber:
             for chunk in tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk"):
                 await self.transcriber_adapter.transcribe_bytes(chunk)
         
-        final_transcript = self.transcriber_adapter.get_final_transcript()
+        final_transcript = self.transcriber_adapter.final_transcript()
         return final_transcript
         
 

@@ -14,6 +14,7 @@ class Dataset:
         """
         self.dataset_path = path.join(datasets_dir, dataset_name)
         entries = listdir(self.dataset_path)
+        entries = [entry for entry in entries if path.isdir(path.join(self.dataset_path, entry))]
         self.entries_iter = iter(entries)
 
         logger.info(f"Loaded dataset {dataset_name} with {len(entries)} elements")

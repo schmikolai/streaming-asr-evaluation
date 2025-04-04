@@ -1,5 +1,5 @@
 from src.eval.BaseTranscriberAdapter import BaseTranscriberAdapter
-from src.helper.ByteIterator import iter_chunks
+from src.helper.byte_iterator import iter_chunks
 from tqdm import tqdm
 import logging
 logger = logging.getLogger(__name__)

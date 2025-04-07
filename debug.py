@@ -22,11 +22,10 @@ element = next(dataset)
 
 logger.info(f"Evaluating dataset element {element[0]} with length {len(element[1])} bytes ")
 
-w = WhisperTranscriber.for_gpu("tiny", [0])
+w = WhisperTranscriber.for_gpu("large-v3-turbo", [0])
 adapter = WhisperStreamingTranscriberAdapter(w)
 
 transcriber = StreamingTranscriber(adapter, chunk_length_ms=1000)
-logger.info(f"Transcribing dataset element with ID {element[0]}")
 
 
 async def run_transcription():

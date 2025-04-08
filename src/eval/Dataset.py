@@ -12,6 +12,7 @@ class Dataset:
             dataset_name (str): The name of the dataset to load. Defaults to "librispeech-pc-test-clean". Possible values are "librispeech-pc-test-clean" and "librispeech-pc-test-other".
             datasets_dir (str): The directory where the dataset is located. Defaults to "data".
         """
+        self.dataset_name = dataset_name
         self.dataset_path = path.join(datasets_dir, dataset_name)
         entries = listdir(self.dataset_path)
         entries = [entry for entry in entries if path.isdir(path.join(self.dataset_path, entry))]

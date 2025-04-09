@@ -32,7 +32,8 @@ class StreamingTranscriber:
         logger.info(f"Transcribing audio data with {len(audio_bytes)} bytes")
         logger.debug(f"Bytes per chunk: {self.chunk_size}")
         with self.transcriber_adapter:
-            for chunk in tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk"):
+            # for chunk in tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk"):
+            for chunk in iter_chunks(audio_bytes, self.chunk_size):
                 await self.transcriber_adapter.transcribe_bytes(chunk)
         
         final_transcript = self.transcriber_adapter.final_transcript()

@@ -21,8 +21,8 @@ def filename_from_setup(
     )
 
 def write_result(
-        result: dict,
         file_name: str,
+        result: dict,
         output_dir: str = "out",
 ) -> str:
     output_path = os.path.join(output_dir, file_name)

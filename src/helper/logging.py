@@ -65,7 +65,7 @@ def init_logger() -> None:
     """Set the LogFormatter as a formatter for the global logger"""
     logging.basicConfig(
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG,
+        level=logging.INFO,
     )
     console = logging.StreamHandler()
     # set a format which is simpler for console use

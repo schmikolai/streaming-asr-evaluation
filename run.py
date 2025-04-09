@@ -48,4 +48,4 @@ async def run_transcription():
     logger.info(f"Offline Transcription WER: {offline_wer}")
 
 
-asyncio.run(run_transcription())
+# asyncio.run(run_transcription())

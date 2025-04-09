@@ -11,10 +11,10 @@ def filename_from_setup(
     transcriber: StreamingTranscriber,
     whisper_transcriber: WhisperStreamingTranscriberAdapter,
 ) -> str:
-    return "{}_{}_cl{}_{}_ws{}_ft{}.csv".format(
+    return "{}_{}_cs{}_{}_ws{}_ft{}.csv".format(
         time.strftime("%Y-%m-%d_%H-%M-%S"),
         dataset.dataset_name,
-        transcriber.chunk_length_ms,
+        transcriber.chunk_size,
         whisper_transcriber.transcriber._model_name,
         whisper_transcriber.max_window_size_bytes / whisper_transcriber.bytes_per_second,
         whisper_transcriber.final_transcription_threshold,

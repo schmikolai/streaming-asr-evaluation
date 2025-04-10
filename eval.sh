@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=2
 #SBATCH --time=08:00:00
 #SBATCH --exclude=marvin,deepthought,glados,jarvis
-#SBATCH --output=/path/to/logs/%x_%j.out
-#SBATCH --error=/path/to/logs/%x_%j.err
+#SBATCH --output=~/logs/slurm/%x_%j.out
+#SBATCH --error=~/logs/slurm/%x_%j.err
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=ns115@hdm-stuttgart.de
 

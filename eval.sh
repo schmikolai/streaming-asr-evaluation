@@ -7,11 +7,7 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=ns115@hdm-stuttgart.de
 
-# Check if conda is available *and* initialized
-if ! type conda &> /dev/null || ! conda info &> /dev/null; then
-    source ~/miniconda3/etc/profile.d/conda.sh
-fi
-
+source ~/miniconda3/etc/profile.d/conda.sh
 conda activate asr
 
 cd "$(dirname "$0")"

@@ -10,17 +10,23 @@ from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTransc
 
 from src.helper.write_result import filename_from_setup, write_result
 from src.helper.logging import init_logger
+from src.helper.config import CONFIG
 
 init_logger()
 
 logger = logging.getLogger("src.Main")
 
+experiment = CONFIG["experiment"]
+
 dataset = Dataset()
 
-w = WhisperTranscriber.for_gpu("large-v3-turbo", [0])
-adapter = WhisperStreamingTranscriberAdapter(w)
+w = WhisperTranscriber.for_gpu(experiment["model"], [0])
+adapter = WhisperStreamingTranscriberAdapter(w,
+                                             transcription_trigger_threshold_seconds=experiment["transcription_interval"],
+                                             final_transcription_threshold=experiment["final_transcription_threshold"],
+                                             final_publish_threshold_seconds=experiment["final_publish_threshold_seconds"])
 
-transcriber = StreamingTranscriber(adapter, chunk_length_ms=1000)
+transcriber = StreamingTranscriber(adapter, chunk_length_ms=experiment["transcription_interval"]*1000)
 
 filename = filename_from_setup(
     dataset,

@@ -4,6 +4,7 @@ import os
 
 import yaml
 from faster_whisper.tokenizer import _LANGUAGE_CODES
+import argparse
 
 
 def read_config(config_yml_path: str) -> dict:
@@ -41,18 +42,6 @@ def read_config(config_yml_path: str) -> dict:
     return {
         # Essential Configuration, these are required in config.yml
         "log_level": get_config("log_level").upper(),
-        "api_keys": get_config("api_keys"),
-        "rest_runner": get_config("rest_runner"),
-        "rest_models": get_extracted_field_from_config("rest_runner", "models"),
-        "websocket_stream": get_config("websocket_stream"),
-        # Networking Configuration
-        #   Port that the REST API will listen on
-        "rest_port": int(get_config("rest_port", default="8393")),
-        #   Port that the Websocket will listen on
-        "websocket_port": int(get_config("websocket_port", default="8394")),
-        #   Host name of the application
-        "host": get_config("host", default="localhost"),
-        #
         # File System Configuration
         #   Path to the status file folder
         "status_file_path": get_config("status_file_path", default="data/status"),
@@ -77,10 +66,16 @@ def read_config(config_yml_path: str) -> dict:
         "supported_language_codes": list(_LANGUAGE_CODES),
     }
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-c", "--config", type=str, default="configs/default.yml", help="Path to the config file"
+)
 
-if os.path.exists(os.path.join(os.getcwd(), "config.local.yml")):
-    CONFIG = read_config(os.path.join(os.getcwd(), "config.local.yml"))
-elif os.path.exists(os.path.join(os.getcwd(), "config.yml")):
-    CONFIG = read_config(os.path.join(os.getcwd(), "config.yml"))
+args = parser.parse_args()
+
+config_path = os.path.join(os.getcwd(), args.config)
+
+if os.path.exists(config_path):
+    CONFIG = read_config(config_path)
 else:
     raise RuntimeWarning("No config file found")

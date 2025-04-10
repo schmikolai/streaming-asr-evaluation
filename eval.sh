@@ -18,4 +18,4 @@ conda activate asr
 
 cd "$(dirname "$0")"
 
-python -u run.py
+python -u run.py "$@"

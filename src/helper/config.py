@@ -5,7 +5,9 @@ import os
 import yaml
 from faster_whisper.tokenizer import _LANGUAGE_CODES
 import argparse
+import logging
 
+logger = logging.getLogger(__name__)
 
 def read_config(config_yml_path: str) -> dict:
     """Read the config from .env or environment variables, returns dict with config"""
@@ -77,5 +79,6 @@ config_path = os.path.join(os.getcwd(), args.config)
 
 if os.path.exists(config_path):
     CONFIG = read_config(config_path)
+    logger.info(f"Config loaded from {config_path}")
 else:
     raise RuntimeWarning("No config file found")

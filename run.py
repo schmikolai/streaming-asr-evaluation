@@ -37,9 +37,8 @@ filename = filename_from_setup(
 logger.info(filename)
 
 async def run():
-    runner = Runner(transcriber, dataset)
+    runner = Runner(transcriber, dataset, filename)
     await runner.run()
-    write_result(filename, runner.results)
 
 
 asyncio.run(run())

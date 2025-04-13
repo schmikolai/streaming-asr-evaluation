@@ -10,6 +10,6 @@
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate asr
 
-cd "$(dirname "$0")"
+# cd "$(dirname "$0")"
 
 python -u run.py "$@"

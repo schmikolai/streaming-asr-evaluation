@@ -44,6 +44,8 @@ def read_config(config_yml_path: str) -> dict:
     return {
         # Essential Configuration, these are required in config.yml
         "log_level": get_config("log_level").upper(),
+        # Experiment Configuration
+        "experiment": get_config("experiment"),
         # File System Configuration
         #   Path to the status file folder
         "status_file_path": get_config("status_file_path", default="data/status"),
@@ -76,6 +78,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 config_path = os.path.join(os.getcwd(), args.config)
+
+logger.info(f"loading Config from {config_path}")
 
 if os.path.exists(config_path):
     CONFIG = read_config(config_path)

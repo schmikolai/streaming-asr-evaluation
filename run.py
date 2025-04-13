@@ -22,11 +22,11 @@ dataset = Dataset()
 
 w = WhisperTranscriber.for_gpu(experiment["model"], [0])
 adapter = WhisperStreamingTranscriberAdapter(w,
-                                             transcription_trigger_threshold_seconds=experiment["transcription_interval"],
-                                             final_transcription_threshold=experiment["final_transcription_threshold"],
-                                             final_publish_threshold_seconds=experiment["final_publish_threshold_seconds"])
+                                             transcription_trigger_threshold_seconds=float(experiment["transcription_interval"]),
+                                             final_transcription_threshold=int(experiment["final_transcription_threshold"]),
+                                             final_publish_threshold_seconds=float(experiment["final_publish_threshold_seconds"]))
 
-transcriber = StreamingTranscriber(adapter, chunk_length_ms=experiment["transcription_interval"]*1000)
+transcriber = StreamingTranscriber(adapter, chunk_length_ms=int(experiment["transcription_interval"]*1000))
 
 filename = filename_from_setup(
     dataset,

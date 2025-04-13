@@ -18,7 +18,7 @@ logger = logging.getLogger("src.Main")
 
 experiment = CONFIG["experiment"]
 
-dataset = Dataset()
+dataset = Dataset(experiment.get("dataset", "librispeech-pc-test-clean"),)
 
 w = WhisperTranscriber.for_gpu(experiment["model"], [0])
 adapter = WhisperStreamingTranscriberAdapter(w,

@@ -1,6 +1,7 @@
 from src.eval.StreamingTranscriber import StreamingTranscriber
 from src.eval.Dataset import Dataset
 
+from tqdm import tqdm
 import jiwer
 import time
 import logging
@@ -14,7 +15,7 @@ class Runner:
         self.results = dict()
 
     async def run(self):
-        for id, audio_bytes, transcription in self.dataset:
+        for id, audio_bytes, transcription in tqdm(self.dataset):
             start_time = time.time()
             pred_transcription = await self.transcriber.transcribe(audio_bytes)
             end_time = time.time()

@@ -28,7 +28,7 @@ filename = f"baseline_{experiment['model']}.csv"
 logger.info(filename)
 
 async def run():
-    runner = Runner(transcriber, dataset)
+    runner = Runner(transcriber, dataset, out_file=filename)
     await runner.run()
 
 asyncio.run(run())

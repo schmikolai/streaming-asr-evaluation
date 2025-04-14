@@ -10,7 +10,7 @@ class OfflineTranscriber:
     ):
         self._whisper = whisper_transcriber
 
-    def transcribe(self, audio_bytes: bytes) -> str:
+    async def transcribe(self, audio_bytes: bytes) -> str:
         """
         Transcribes the given audio bytes as stream, by segmenting the audio into chucks and continuously sending new bytes to the TranscriberAdapter.
         Args:
@@ -19,7 +19,6 @@ class OfflineTranscriber:
             str: The transcribed text from the audio data.
         """
         logger.info(f"Transcribing audio data with {len(audio_bytes)} bytes")
-        logger.debug(f"Bytes per chunk: {self.chunk_size}")
         data, _ = self._whisper.transcribe(audio_bytes)
 
         final_transcript = ""

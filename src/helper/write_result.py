@@ -27,4 +27,6 @@ def write_result(
 ) -> str:
     output_path = os.path.join(output_dir, file_name)
     df = pd.DataFrame.from_dict(result, orient="index")
+    df.index.name = "id"
     df.to_csv(output_path, index=True)
+    return output_path

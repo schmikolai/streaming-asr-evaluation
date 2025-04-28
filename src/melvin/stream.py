@@ -11,6 +11,7 @@ from pydub import AudioSegment
 from src.helper import logger
 from src.helper.local_agreement import LocalAgreement
 from src.melvin.Transcriber import Transcriber
+from src.eval.OutputHandler import OutputHandler
 
 # To Calculate the seconds of audio in a chunk of 16000 Hz, 2 bytes per sample and 1 channel (as typically used in Whisper):
 # 16000 Hz * 2 bytes * 1 channel = 32000 bytes per second
@@ -30,7 +31,7 @@ PARTIAL_TRANSCRIPTION_BYTE_THRESHOLD = BYTES_PER_SECOND * 1
 FINAL_PUBLISH_SECOND_THRESHOLD_FACTOR = 5
 
 class Stream:
-    def __init__(self, transcriber: Transcriber, id: int, output_handler):
+    def __init__(self, transcriber: Transcriber, id: int, output_handler: OutputHandler):
         self.logger = logger.get_logger_with_id(__name__, f"{id}")
         self.transcriber = transcriber
         self.output_handler = output_handler
@@ -42,7 +43,6 @@ class Stream:
         self.agreement = LocalAgreement()
         self.bytes_received_since_last_transcription = 0
         self.final_transcriptions = []
-        self.export_audio = b""
         self.previous_byte_count = 0
 
         self.partial_transcription_byte_threshold = PARTIAL_TRANSCRIPTION_BYTE_THRESHOLD
@@ -59,9 +59,6 @@ class Stream:
         self.bytes_received_since_last_transcription += len(bytes)
         self.sliding_window += bytes
         self.total_bytes += bytes
-        self.export_audio = self.concatenate_audio_with_crossfade(
-            self.export_audio, bytes
-        )
 
         if (
             self.bytes_received_since_last_transcription >= self.partial_transcription_byte_threshold 
@@ -86,20 +83,26 @@ class Stream:
                 task.add_done_callback(self.transcription_tasks.discard)
 
         # Send final if either threshold is reached or sentence ended
-        if (
-            self.agreement.get_confirmed_length() > FINAL_TRANSCRIPTION_THRESHOLD 
-            or self.agreement.contains_has_sentence_end()
-            or (time.time() - self.last_final_published) >= self.final_publish_second_threshold
-        ):
+        if self.agreement.get_confirmed_length() > FINAL_TRANSCRIPTION_THRESHOLD:
             self.logger.debug(
                 f"NEW FINAL: length of chunk cache: {len(self.sliding_window)}"
             )
-            self.flush_final()
+            self.flush_final(reason="threshold reached")
+        elif self.agreement.contains_has_sentence_end():
+            self.logger.debug(
+                f"NEW FINAL: length of chunk cache: {len(self.sliding_window)}"
+            )
+            self.flush_final(reason="sentence end")
+        elif (time.time() - self.last_final_published) >= self.final_publish_second_threshold:
+            self.logger.debug(
+                f"NEW FINAL: length of chunk cache: {len(self.sliding_window)}"
+            )
+            self.flush_final(reason="timeout")
 
 
     def end_stream(self) -> None:
         """Function to end the stream and send the final transcription"""
-        self.flush_final()
+        self.flush_final(reason="end stream")
 
 
     async def finalize_transcript(self) -> Dict:
@@ -107,7 +110,7 @@ class Stream:
         return await self.build_result_from_words(current_transcript)
 
 
-    def flush_final(self) -> None:
+    def flush_final(self, reason: str = None) -> None:
         """Function to send a final to the client and update the content on the sliding window"""
         try:
             agreed_results = []
@@ -130,7 +133,7 @@ class Stream:
                 self.window_start_timestamp += bytes_to_cut_off / BYTES_PER_SECOND
                 self.sliding_window = self.sliding_window[bytes_to_cut_off:]
 
-            self.output_handler.send_text(json.dumps(result, indent=2))
+            self.output_handler.send_final(result["text"], reason=reason)
 
             self.logger.debug(
                 f"Published final of {len(agreed_results)}."
@@ -218,7 +221,7 @@ class Stream:
             result = json.dumps({"partial": text}, indent=2)
 
             if not skip_send:
-                self.output_handler.send_text(result)
+                self.output_handler.send_partial(result)
 
             end_time = time.time()
             self.logger.debug(

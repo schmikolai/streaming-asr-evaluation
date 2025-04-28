@@ -1,5 +1,6 @@
 from src.melvin.stream import Stream
 from src.helper.byte_iterator import iter_chunks
+from src.eval.OutputHandler import OutputHandler
 from tqdm import tqdm
 import time
 import asyncio
@@ -10,6 +11,7 @@ logger = logging.getLogger(__name__)
 class TimedStreamingTranscriber:
     def __init__(self,
                  stream: Stream,
+                 output_handler: OutputHandler,
                  sample_rate: int = 16000,
                  chunk_length_ms: int = 100,
                  frame_bit_size: int = 16):
@@ -22,6 +24,7 @@ class TimedStreamingTranscriber:
             frame_bit_size (int): The size of each frame in bytes. Defaults to 16.
         """
         self.stream = stream
+        self.output_handler = output_handler
         self.chunk_length_ms = chunk_length_ms
         self.chunk_size = sample_rate * chunk_length_ms // 1000 * frame_bit_size // 8
 
@@ -40,6 +43,8 @@ class TimedStreamingTranscriber:
         start_time = time.perf_counter()
         interval = self.chunk_length_ms / 1000
         tasks = []
+
+        self.output_handler.init_timer(offset=-interval)
 
         for idx, chunk in enumerate(tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk")):
             task = asyncio.create_task(self.stream.receive_bytes(chunk))

@@ -4,11 +4,11 @@ class OutputHandler:
     def __init__(self):
         self.messages = []
 
-    def init_timer(self):
+    def init_timer(self, offset: float = 0):
         """
         Initialize the timer for the output handler.
         """
-        self.start_time = time.perf_counter()
+        self.start_time = time.perf_counter() + offset
 
     def send_partial(self, text):
         """

@@ -216,12 +216,10 @@ class Stream:
                     if w.end > (cutoff_timestamp + 0.01)
                 ])
 
-            self.agreement.merge(new_words)
-
-            result = json.dumps({"partial": text}, indent=2)
-
             if not skip_send:
-                self.output_handler.send_partial(result)
+                self.output_handler.send_partial(text)
+
+            self.agreement.merge(new_words)
 
             end_time = time.time()
             self.logger.debug(

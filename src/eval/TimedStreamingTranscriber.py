@@ -1,7 +1,8 @@
 from src.melvin.stream import Stream
 from src.helper.byte_iterator import iter_chunks
 from tqdm import tqdm
-from time import sleep
+import time
+import asyncio
 
 import logging
 logger = logging.getLogger(__name__)
@@ -10,7 +11,7 @@ class TimedStreamingTranscriber:
     def __init__(self,
                  stream: Stream,
                  sample_rate: int = 16000,
-                 chunk_length_ms: int = 500,
+                 chunk_length_ms: int = 100,
                  frame_bit_size: int = 16):
         """
         Initializes the StreamingTranscriber with the given transcriber adapter.
@@ -18,7 +19,7 @@ class TimedStreamingTranscriber:
             stream (Stream): The melvin stream to use for transcribing audio data.
             sample_rate (int): The sample rate of the audio data. Defaults to 16000.
             chunk_length_ms (int): The length of each chunk in milliseconds. Defaults to 100.
-            frame_bit_size (int): The size of each frame in bytes. Defaults to 2.
+            frame_bit_size (int): The size of each frame in bytes. Defaults to 16.
         """
         self.stream = stream
         self.chunk_length_ms = chunk_length_ms
@@ -34,14 +35,24 @@ class TimedStreamingTranscriber:
         """
         logger.info(f"Transcribing audio data with {len(audio_bytes)} bytes")
         logger.debug(f"Bytes per chunk: {self.chunk_size}")
-
-        # for chunk in tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk"):
-        for chunk in iter_chunks(audio_bytes, self.chunk_size):
-            self.stream.receive_bytes(chunk)
-            sleep(self.chunk_length_ms / 1000)
-
+        print(f"Transcribing audio data with {len(audio_bytes)} bytes")
         
-        final_transcript = self.transcriber_adapter.final_transcript()
-        return final_transcript
+        start_time = time.perf_counter()
+        interval = self.chunk_length_ms / 1000
+        tasks = []
+
+        for idx, chunk in enumerate(tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk")):
+            task = asyncio.create_task(self.stream.receive_bytes(chunk))
+            tasks.append(task)
+            
+            # Berechne geplante nächste Zeit
+            next_time = start_time + (idx + 1) * interval
+            sleep_duration = next_time - time.perf_counter()
+            if sleep_duration > 0:
+                await asyncio.sleep(sleep_duration)
+
+        await asyncio.gather(*tasks)
+        self.stream.end_stream()
+        return ""
         
 

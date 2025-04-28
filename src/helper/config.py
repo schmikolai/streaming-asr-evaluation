@@ -70,14 +70,15 @@ def read_config(config_yml_path: str) -> dict:
         "supported_language_codes": list(_LANGUAGE_CODES),
     }
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "-c", "--config", type=str, default="configs/default.yml", help="Path to the config file"
-)
+# parser = argparse.ArgumentParser()
+# parser.add_argument(
+#     "-c", "--config", type=str, default="configs/default.yml", help="Path to the config file"
+# )
 
-args = parser.parse_args()
+# args = parser.parse_args()
 
-config_path = os.path.join(os.getcwd(), args.config)
+config_path = os.path.join(os.getcwd(), "configs/default.yml")
+# config_path = os.path.join(os.getcwd(), args.config)
 
 logger.info(f"loading Config from {config_path}")
 

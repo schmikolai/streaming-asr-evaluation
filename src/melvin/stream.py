@@ -35,7 +35,6 @@ class Stream:
         self.transcriber = transcriber
         self.output_handler = output_handler
         self.id = id
-        self.close_stream = False
 
         self.sliding_window = b""
         self.total_bytes = b""
@@ -55,7 +54,7 @@ class Stream:
         self.transcription_tasks = set()
 
 
-    def receive_bytes(self, bytes: bytes) -> None:
+    async def receive_bytes(self, bytes: bytes) -> None:
         """Function to receive bytes for transcription"""
         self.bytes_received_since_last_transcription += len(bytes)
         self.sliding_window += bytes
@@ -100,7 +99,7 @@ class Stream:
 
     def end_stream(self) -> None:
         """Function to end the stream and send the final transcription"""
-        self.close_stream = True
+        self.flush_final()
 
 
     async def finalize_transcript(self) -> Dict:
@@ -108,7 +107,7 @@ class Stream:
         return await self.build_result_from_words(current_transcript)
 
 
-    async def flush_final(self) -> None:
+    def flush_final(self) -> None:
         """Function to send a final to the client and update the content on the sliding window"""
         try:
             agreed_results = []
@@ -131,8 +130,7 @@ class Stream:
                 self.window_start_timestamp += bytes_to_cut_off / BYTES_PER_SECOND
                 self.sliding_window = self.sliding_window[bytes_to_cut_off:]
 
-            if not self.close_stream:
-                self.output_handler.send_text(json.dumps(result, indent=2))
+            self.output_handler.send_text(json.dumps(result, indent=2))
 
             self.logger.debug(
                 f"Published final of {len(agreed_results)}."
@@ -143,7 +141,6 @@ class Stream:
             self.logger.error(
                 f"Error while transcribing audio: {traceback.format_exc()}"
             )
-            self.close_stream = True
 
 
     def build_result_from_words(self, words: List[Word],save=True) -> Dict:
@@ -186,7 +183,7 @@ class Stream:
             self.bytes_received_since_last_transcription = 0
 
             # Pass the chunk to the transcriber
-            segments = self.transcriber._transcribe(
+            segments = self.transcriber.transcribe(
                 window_content,
             )
 
@@ -220,8 +217,8 @@ class Stream:
 
             result = json.dumps({"partial": text}, indent=2)
 
-            if not skip_send and not self.close_stream:
-                await self.output_handler.send_text(result)
+            if not skip_send:
+                self.output_handler.send_text(result)
 
             end_time = time.time()
             self.logger.debug(
@@ -235,7 +232,6 @@ class Stream:
             self.logger.error(
                 "Error while transcribing audio: {}".format(traceback.format_exc())
             )
-            self.close_stream = True
 
 
     def update_partial_threshold(self, last_run_duration: float):

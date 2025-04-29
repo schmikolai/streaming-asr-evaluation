@@ -96,9 +96,9 @@ class Stream:
         self.flush_final(reason="end stream")
 
 
-    async def finalize_transcript(self) -> Dict:
+    def finalize_transcript(self) -> Dict:
         current_transcript = self.agreement.unconfirmed
-        return await self.build_result_from_words(current_transcript)
+        return self.build_result_from_words(current_transcript)
 
 
     def flush_final(self, reason: str = None) -> None:
@@ -124,7 +124,7 @@ class Stream:
                 self.window_start_timestamp += bytes_to_cut_off / BYTES_PER_SECOND
                 self.sliding_window = self.sliding_window[bytes_to_cut_off:]
 
-            self.output_handler.send_final(result["text"], reason=reason)
+            self.output_handler.send_final(result["result"], reason=reason)
 
             self.logger.debug(
                 f"Published final of {len(agreed_results)}."
@@ -208,7 +208,7 @@ class Stream:
                 ])
 
             if not skip_send:
-                self.output_handler.send_partial(text)
+                self.output_handler.send_partial(new_words)
 
             self.agreement.merge(new_words)
 

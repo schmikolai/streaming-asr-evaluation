@@ -70,7 +70,7 @@ def init_logger() -> None:
     console = logging.StreamHandler()
     # set a format which is simpler for console use
     # Note: identifier is only given by some classes that use this similar to a traceID
-    formatter = LogFormatter(
+    formatter = logging.Formatter(
         "[%(asctime)s %(name)s:%(lineno)d] %(levelname)s %(message)s"
     )
     # tell the handler to use this format

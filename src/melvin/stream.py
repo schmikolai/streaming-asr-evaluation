@@ -221,10 +221,10 @@ class Stream:
         # dont adjust any timings with a small window
         # these adjustments would be overwritten anyway
         if len(self.sliding_window) < MAX_WINDOW_SIZE_BYTES * 0.75 and last_run_duration < self.partial_transcription_byte_threshold / BYTES_PER_SECOND:
-            self.logger.info(f"Current window too small for adjustment ({len(self.sliding_window)}/{MAX_WINDOW_SIZE_BYTES * 0.75})")
+            self.logger.debug(f"Current window too small for adjustment ({len(self.sliding_window)}/{MAX_WINDOW_SIZE_BYTES * 0.75})")
             return
         new_threshold = (last_run_duration * BYTES_PER_SECOND) + 0.5
-        self.logger.info(f"Adjusted threshold duration to : {new_threshold / BYTES_PER_SECOND}")
+        self.logger.debug(f"Adjusted threshold duration to : {new_threshold / BYTES_PER_SECOND}")
         self.partial_transcription_byte_threshold = new_threshold
         self.final_publish_second_threshold = self.partial_transcription_byte_threshold * FINAL_PUBLISH_SECOND_THRESHOLD_FACTOR
 

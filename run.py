@@ -4,7 +4,7 @@ import asyncio
 from src.eval.Dataset import Dataset
 from src.eval.RealtimeRunner import RealtimeRunner
 
-from src.melvin.Transcriber import Transcriber as WhisperTranscriber
+from src.melvin.StreamTranscriber import StreamTranscriber
 
 from src.helper.write_result import outdir_from_setup
 from src.helper.logging import init_logger
@@ -18,7 +18,7 @@ experiment = CONFIG["experiment"]
 
 dataset = Dataset(experiment.get("dataset", "librispeech-pc-test-clean"),)
 
-w = WhisperTranscriber.for_gpu(experiment["model"], [0])
+w = StreamTranscriber.for_gpu(experiment["model"], [0])
 
 outdir = outdir_from_setup(
     dataset,

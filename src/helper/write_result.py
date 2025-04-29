@@ -20,6 +20,16 @@ def filename_from_setup(
         whisper_transcriber.final_transcription_threshold,
     )
 
+def outdir_from_setup(
+    dataset: Dataset,
+    whisper_transcriber: WhisperStreamingTranscriberAdapter,
+):
+    return "{}_{}_{}".format(
+        time.strftime("%Y-%m-%d_%H-%M-%S"),
+        dataset.dataset_name,
+        whisper_transcriber.transcriber._model_name,
+    )
+
 def write_result(
         file_name: str,
         result: dict,

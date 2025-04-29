@@ -84,19 +84,10 @@ class Stream:
 
         # Send final if either threshold is reached or sentence ended
         if self.agreement.get_confirmed_length() > FINAL_TRANSCRIPTION_THRESHOLD:
-            self.logger.debug(
-                f"NEW FINAL: length of chunk cache: {len(self.sliding_window)}"
-            )
             self.flush_final(reason="threshold reached")
         elif self.agreement.contains_has_sentence_end():
-            self.logger.debug(
-                f"NEW FINAL: length of chunk cache: {len(self.sliding_window)}"
-            )
             self.flush_final(reason="sentence end")
         elif (time.time() - self.last_final_published) >= self.final_publish_second_threshold:
-            self.logger.debug(
-                f"NEW FINAL: length of chunk cache: {len(self.sliding_window)}"
-            )
             self.flush_final(reason="timeout")
 
 

@@ -19,13 +19,14 @@ class OutputHandler:
         """
         self.start_time = time.perf_counter() + offset
 
-    def send_partial(self, words):
+    def send_partial(self, words, window_time_start, window_time_end):
         """
         Send partial text to the output.
         """
         prediction = {
             "result": words,
-            "time": time.perf_counter() - self.start_time
+            "window": [window_time_start, window_time_end],
+            "observation_time": time.perf_counter() - self.start_time
         }
         self.partial_predictions.append(prediction)
 

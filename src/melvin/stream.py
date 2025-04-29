@@ -181,11 +181,6 @@ class Stream:
                 window_content,
             )
 
-            cutoff_timestamp = 0
-            if len(self.final_transcriptions) > 0:
-                # Absolute timestamp - thrown out bytes -> timestamp in the current window
-                cutoff_timestamp = self.final_transcriptions[-1]["result"][-1]["end"] - (self.previous_byte_count / BYTES_PER_SECOND)
-
             new_words = []
 
             for segment in list(segments):
@@ -194,21 +189,17 @@ class Stream:
                 for word in segment.words:
                     new_words.append(word)
 
-            text = ""
-
             if len(self.agreement.unconfirmed) > 0:
                 # Hacky workaround for doubled word between finals
                 if len(new_words) > 0 and len(self.final_transcriptions) > 0:
                     if new_words[0].word == self.final_transcriptions[-1]["result"][-1]["word"]:
                         new_words.pop(0)
-                text = " ".join([
-                    w.word 
-                    for w in new_words 
-                    if w.end > (cutoff_timestamp + 0.01)
-                ])
+
+            window_start_timestamp = self.previous_byte_count / BYTES_PER_SECOND
+            cutoff_timestamp = (len(window_content) + self.previous_byte_count) / BYTES_PER_SECOND
 
             if not skip_send:
-                self.output_handler.send_partial(self.build_result_from_words(new_words))
+                self.output_handler.send_partial(self.build_result_from_words(new_words), window_start_timestamp, cutoff_timestamp)
 
             self.agreement.merge(new_words)
 

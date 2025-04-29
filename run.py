@@ -5,7 +5,6 @@ from src.eval.Dataset import Dataset
 from src.eval.RealtimeRunner import RealtimeRunner
 
 from src.melvin.Transcriber import Transcriber as WhisperTranscriber
-from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTranscriberAdapter
 
 from src.helper.write_result import outdir_from_setup
 from src.helper.logging import init_logger

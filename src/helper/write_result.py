@@ -1,6 +1,7 @@
 from src.eval.Dataset import Dataset
 from src.eval.StreamingTranscriber import StreamingTranscriber
 from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTranscriberAdapter
+from src.melvin.Transcriber import Transcriber
 
 import time
 import os
@@ -22,12 +23,12 @@ def filename_from_setup(
 
 def outdir_from_setup(
     dataset: Dataset,
-    whisper_transcriber: WhisperStreamingTranscriberAdapter,
+    whisper_transcriber: Transcriber,
 ):
     return "{}_{}_{}".format(
         time.strftime("%Y-%m-%d_%H-%M-%S"),
         dataset.dataset_name,
-        whisper_transcriber.transcriber._model_name,
+        whisper_transcriber._model_name,
     )
 
 def write_result(

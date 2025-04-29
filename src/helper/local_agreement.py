@@ -40,6 +40,13 @@ class LocalAgreement:
         if ind is None:
             return []
         return self.flush_confirmed(ind + 1)
+    
+    def flush_all(self) -> List[Word]:
+        flushed = self.confirmed + self.unconfirmed
+        self.confirmed = []
+        self.unconfirmed = []
+        self.confirmed_contains_sentence_end = False
+        return flushed
 
     def merge(self, incoming: List[Word]) -> List[Word]:
         if len(self.confirmed) > 0:

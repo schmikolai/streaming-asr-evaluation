@@ -105,7 +105,10 @@ class Stream:
         """Function to send a final to the client and update the content on the sliding window"""
         try:
             agreed_results = []
-            if self.agreement.contains_has_sentence_end():
+            if reason == "end stream":
+                # If the stream ends, flush all words
+                agreed_results = self.agreement.flush_all()
+            elif self.agreement.contains_has_sentence_end():
                 agreed_results = self.agreement.flush_at_sentence_end()
             else:
                 agreed_results = self.agreement.flush_confirmed()

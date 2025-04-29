@@ -208,7 +208,7 @@ class Stream:
                 ])
 
             if not skip_send:
-                self.output_handler.send_partial(new_words)
+                self.output_handler.send_partial(self.build_result_from_words(new_words))
 
             self.agreement.merge(new_words)
 

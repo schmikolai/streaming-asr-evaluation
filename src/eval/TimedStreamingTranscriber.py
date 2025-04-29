@@ -46,7 +46,8 @@ class TimedStreamingTranscriber:
 
         self.output_handler.init_timer(offset=-interval)
 
-        for idx, chunk in enumerate(tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk")):
+        # for idx, chunk in enumerate(tqdm(iter_chunks(audio_bytes, self.chunk_size), total=len(audio_bytes) // self.chunk_size, desc="Transcribing", unit="chunk")):
+        for idx, chunk in enumerate(iter_chunks(audio_bytes, self.chunk_size)):
             task = asyncio.create_task(self.stream.receive_bytes(chunk))
             tasks.append(task)
             

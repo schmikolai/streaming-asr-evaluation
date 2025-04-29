@@ -25,7 +25,7 @@ def outdir_from_setup(
     dataset: Dataset,
     whisper_transcriber: StreamTranscriber,
 ):
-    return "{}_{}_{}".format(
+    return "out/{}_{}_{}".format(
         time.strftime("%Y-%m-%d_%H-%M-%S"),
         dataset.dataset_name,
         whisper_transcriber._model_name,

@@ -27,5 +27,7 @@ class RealtimeRunner:
             y_pred = await transcriber.transcribe(audio_bytes)
             with open(os.path.join(self.out_dir, f"{id}_final.json"), "w") as f:
                 json.dump(out.final_words, f)
+            with open(os.path.join(self.out_dir, f"{id}_final_messages.json"), "w") as f:
+                json.dump(out.final_messages, f)
             with open(os.path.join(self.out_dir, f"{id}_partial.json"), "w") as f:
                 json.dump(out.partial_predictions, f)

@@ -11,6 +11,7 @@ def norm_word(word) -> str:
 class OutputHandler:
     def __init__(self):
         self.partial_predictions = []
+        self.final_messages = []
         self.final_words = []
 
     def init_timer(self, offset: float = 0):
@@ -31,6 +32,12 @@ class OutputHandler:
         self.partial_predictions.append(prediction)
 
     def send_final(self, words, reason: str = None):
+        final_message = {
+            "result": words,
+            "reason": reason,
+            "observation_time": time.perf_counter() - self.start_time
+        }
+        self.final_messages.append(final_message)
         i = len(self.final_words)
         self.final_words += words
         while i < len(self.final_words):

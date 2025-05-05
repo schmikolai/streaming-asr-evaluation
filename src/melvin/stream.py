@@ -54,6 +54,16 @@ class Stream:
         self.transcription_tasks = set()
 
 
+    def check_for_final(self) -> None:
+        # Send final if either threshold is reached or sentence ended
+        if self.agreement.get_confirmed_length() > FINAL_TRANSCRIPTION_THRESHOLD:
+            self.flush_final(reason="threshold reached")
+        elif self.agreement.contains_has_sentence_end():
+            self.flush_final(reason="sentence end")
+        elif (time.time() - self.last_final_published) >= self.final_publish_second_threshold:
+            self.flush_final(reason="timeout")
+
+
     async def receive_bytes(self, bytes: bytes) -> None:
         """Function to receive bytes for transcription"""
         self.bytes_received_since_last_transcription += len(bytes)
@@ -81,14 +91,7 @@ class Stream:
                 )
                 self.transcription_tasks.add(task)
                 task.add_done_callback(self.transcription_tasks.discard)
-
-        # Send final if either threshold is reached or sentence ended
-        if self.agreement.get_confirmed_length() > FINAL_TRANSCRIPTION_THRESHOLD:
-            self.flush_final(reason="threshold reached")
-        elif self.agreement.contains_has_sentence_end():
-            self.flush_final(reason="sentence end")
-        elif (time.time() - self.last_final_published) >= self.final_publish_second_threshold:
-            self.flush_final(reason="timeout")
+                task.add_done_callback(self.check_for_final)
 
 
     def end_stream(self) -> None:
@@ -179,6 +182,9 @@ class Stream:
             result: str = "Missing data"
             self.bytes_received_since_last_transcription = 0
 
+            window_start_timestamp = self.previous_byte_count / BYTES_PER_SECOND
+            cutoff_timestamp = (len(window_content) + self.previous_byte_count) / BYTES_PER_SECOND
+
             # Pass the chunk to the transcriber
             segments = self.transcriber.transcribe(
                 window_content,
@@ -197,9 +203,6 @@ class Stream:
                 if len(new_words) > 0 and len(self.final_transcriptions) > 0:
                     if new_words[0].word == self.final_transcriptions[-1]["result"][-1]["word"]:
                         new_words.pop(0)
-
-            window_start_timestamp = self.previous_byte_count / BYTES_PER_SECOND
-            cutoff_timestamp = (len(window_content) + self.previous_byte_count) / BYTES_PER_SECOND
 
             if not skip_send:
                 self.output_handler.send_partial(self.build_result_from_words(new_words, save=False), window_start_timestamp, cutoff_timestamp)

@@ -16,6 +16,8 @@ logger = logging.getLogger("src.Main")
 
 experiment = CONFIG["experiment"]
 
+logger.info(f"Running experiment {experiment}")
+
 dataset = Dataset(experiment.get("dataset", "librispeech-pc-test-clean"), dataset_ids=experiment.get("dataset_ids", None))
 
 w = StreamTranscriber.for_gpu(experiment["model"], [0])

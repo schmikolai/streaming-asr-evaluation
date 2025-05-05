@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Dataset:
-    def __init__(self, dataset_name: str = "librispeech-pc-test-clean", datasets_dir: str = "data"):
+    def __init__(self, dataset_name: str = "librispeech-pc-test-clean", datasets_dir: str = "data", dataset_ids: list = None):
         """
         Initializes the Dataset with the given dataset name and directory.
         Args:
@@ -16,6 +16,8 @@ class Dataset:
         self.dataset_path = path.join(datasets_dir, dataset_name)
         entries = listdir(self.dataset_path)
         self.entries = [entry for entry in entries if path.isdir(path.join(self.dataset_path, entry))]
+        if dataset_ids is not None:
+            self.entries = [entry for entry in self.entries if entry in dataset_ids]
         self.entries_iter = iter(self.entries)
 
         logger.info(f"Loaded dataset {dataset_name} with {len(entries)} elements")

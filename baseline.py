@@ -9,7 +9,7 @@ from src.melvin.Transcriber import Transcriber as WhisperTranscriber
 from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTranscriberAdapter
 
 from src.helper.write_result import filename_from_setup, write_result
-from src.helper.logging import init_logger
+from src.helper.logger import init_logger
 from src.helper.config import CONFIG
 
 init_logger()

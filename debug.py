@@ -11,7 +11,7 @@ from src.melvin.Transcriber import Transcriber as WhisperTranscriber
 from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTranscriberAdapter
 
 from src.helper.write_result import filename_from_setup
-from src.helper.logging import init_logger, set_global_loglevel
+from src.helper.logger import init_logger, set_global_loglevel
 
 init_logger()
 set_global_loglevel("INFO")

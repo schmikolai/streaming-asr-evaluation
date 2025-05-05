@@ -54,7 +54,8 @@ class Stream:
         self.transcription_tasks = set()
 
 
-    def check_for_final(self) -> None:
+    def check_for_final(self, task = None) -> None:
+        self.logger.debug("check_for_finals")
         # Send final if either threshold is reached or sentence ended
         if self.agreement.get_confirmed_length() > FINAL_TRANSCRIPTION_THRESHOLD:
             self.flush_final(reason="threshold reached")

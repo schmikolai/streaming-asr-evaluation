@@ -1,5 +1,5 @@
 from src.eval.Dataset import Dataset
-from src.helper.logging import init_logger
+from src.helper.logger import init_logger
 
 init_logger()
 

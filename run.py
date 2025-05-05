@@ -7,10 +7,15 @@ from src.eval.RealtimeRunner import RealtimeRunner
 from src.melvin.StreamTranscriber import StreamTranscriber
 
 from src.helper.write_result import outdir_from_setup
-from src.helper.logging import init_logger
+from src.helper.logger import init_logger, set_global_loglevel
 from src.helper.config import CONFIG
 
 init_logger()
+
+log_level = CONFIG.get("log_level", None)
+
+if log_level is not None:
+    set_global_loglevel(log_level)
 
 logger = logging.getLogger("src.Main")
 

@@ -1,8 +1,8 @@
 import logging
 import asyncio
 
-from src.eval.Dataset import Dataset
-from src.eval.RealtimeRunner import RealtimeRunner
+from src.run.Dataset import Dataset
+from src.run.RealtimeRunner import RealtimeRunner
 
 from src.melvin.StreamTranscriber import StreamTranscriber
 

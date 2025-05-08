@@ -7,7 +7,7 @@ from faster_whisper.transcribe import Word
 
 from src.helper.local_agreement import LocalAgreement
 from src.melvin.Transcriber import Transcriber
-from src.eval.BaseTranscriberAdapter import BaseTranscriberAdapter
+from src.run.BaseTranscriberAdapter import BaseTranscriberAdapter
 
 # To Calculate the seconds of audio in a chunk of 16000 Hz, 2 bytes per sample and 1 channel (as typically used in Whisper):
 # 16000 Hz * 2 bytes * 1 channel = 32000 bytes per second

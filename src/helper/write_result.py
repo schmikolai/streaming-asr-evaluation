@@ -1,5 +1,5 @@
-from src.eval.Dataset import Dataset
-from src.eval.StreamingTranscriber import StreamingTranscriber
+from src.run.Dataset import Dataset
+from src.run.StreamingTranscriber import StreamingTranscriber
 from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTranscriberAdapter
 from src.melvin.StreamTranscriber import StreamTranscriber
 

@@ -1,9 +1,9 @@
 import logging
 import asyncio
 
-from src.eval.Dataset import Dataset
-from src.eval.OfflineTranscriber import OfflineTranscriber
-from src.eval.Runner import Runner
+from src.run.Dataset import Dataset
+from src.run.OfflineTranscriber import OfflineTranscriber
+from src.run.Runner import Runner
 
 from src.melvin.Transcriber import Transcriber as WhisperTranscriber
 from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTranscriberAdapter

@@ -2,10 +2,10 @@ import logging
 import asyncio
 from jiwer import wer
 
-from src.eval.Dataset import Dataset
-from src.eval.StreamingTranscriber import StreamingTranscriber
-from src.eval.DebugTranscriberAdapter import DebugTranscriberAdapter
-from src.eval.WebsocketTranscriberAdapter import WebsocketTranscriberAdapter
+from src.run.Dataset import Dataset
+from src.run.StreamingTranscriber import StreamingTranscriber
+from src.run.DebugTranscriberAdapter import DebugTranscriberAdapter
+from src.run.WebsocketTranscriberAdapter import WebsocketTranscriberAdapter
 
 from src.melvin.Transcriber import Transcriber as WhisperTranscriber
 from src.melvin.WhisperStreamingTranscriberAdapter import WhisperStreamingTranscriberAdapter

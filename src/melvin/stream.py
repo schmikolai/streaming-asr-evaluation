@@ -11,7 +11,7 @@ from pydub import AudioSegment
 from src.helper import logger
 from src.helper.local_agreement import LocalAgreement
 from src.melvin.Transcriber import Transcriber
-from src.eval.OutputHandler import OutputHandler
+from src.run.OutputHandler import OutputHandler
 
 # To Calculate the seconds of audio in a chunk of 16000 Hz, 2 bytes per sample and 1 channel (as typically used in Whisper):
 # 16000 Hz * 2 bytes * 1 channel = 32000 bytes per second

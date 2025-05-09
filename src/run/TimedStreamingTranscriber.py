@@ -1,6 +1,6 @@
 from src.melvin.stream import Stream
 from src.helper.byte_iterator import iter_chunks
-from src.eval.OutputHandler import OutputHandler
+from src.run.OutputHandler import OutputHandler
 from tqdm import tqdm
 import time
 import asyncio

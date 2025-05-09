@@ -1,4 +1,4 @@
-from src.eval.BaseTranscriberAdapter import BaseTranscriberAdapter
+from src.run.BaseTranscriberAdapter import BaseTranscriberAdapter
 import numpy as np
 import logging
 logger = logging.getLogger(__name__)

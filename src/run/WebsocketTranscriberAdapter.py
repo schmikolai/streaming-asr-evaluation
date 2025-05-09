@@ -1,4 +1,4 @@
-from src.eval.BaseTranscriberAdapter import BaseTranscriberAdapter
+from src.run.BaseTranscriberAdapter import BaseTranscriberAdapter
 import websockets
 import asyncio
 import threading

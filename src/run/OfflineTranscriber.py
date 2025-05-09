@@ -1,4 +1,4 @@
-from src.eval.BaseTranscriberAdapter import BaseTranscriberAdapter
+from src.run.BaseTranscriberAdapter import BaseTranscriberAdapter
 from src.helper.byte_iterator import iter_chunks
 from src.melvin.Transcriber import Transcriber
 import logging
@@ -29,6 +29,6 @@ class OfflineTranscriber:
                 # Append the final transcription to the final transcript
                 final_transcript += segment.text
 
-        return final_transcript
+        return final_transcript, data
         
 

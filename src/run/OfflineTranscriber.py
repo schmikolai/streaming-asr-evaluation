@@ -22,13 +22,15 @@ class OfflineTranscriber:
         data, _ = self._whisper.transcribe(audio_bytes)
 
         final_transcript = ""
+        words = []
 
         for segment in data:
+            words += segment.words
             # Check if the segment is a final transcription
             if segment.text:
                 # Append the final transcription to the final transcript
                 final_transcript += segment.text
 
-        return final_transcript, data
+        return final_transcript, words
         
 

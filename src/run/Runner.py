@@ -23,8 +23,21 @@ class Runner:
             start_time = time.time()
             pred_transcription, data = await self.transcriber.transcribe(audio_bytes)
             end_time = time.time()
-            with open(f"{id}.json", "w") as f:
-                json.dump(data, f)
+            word_dict_array = []
+            for word in data:
+                start = float(f"{word.start:.6f}")
+                end = float(f"{word.end:.6f}")
+                conf = float(f"{word.probability:.6f}")
+                word_dict_array.append(
+                    {
+                    "conf": conf,
+                    # The start time and end time is the time of the word minus the time of the current final
+                    "start": start,
+                    "end": end,
+                    "word": word.word.strip(),
+                })
+            with open(f"out/baseline/{id}.json", "w") as f:
+                json.dump(word_dict_array, f)
             continue
             wer = jiwer.wer(transcription, pred_transcription)
             logger.info(f"Transcribed element {id} with WER {wer}")

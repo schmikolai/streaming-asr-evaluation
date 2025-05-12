@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 from src.eval.utils.is_equal_word import is_equal_word
 
 if TYPE_CHECKING:
@@ -20,34 +20,49 @@ class PredictionAlignment:
     sample: "SampleResult"
     timestep: int
 
+    _alignment_sequence: list["WordResult"] = []
+
     def __init__(self, sample: "SampleResult", timestep: int, temporal_tolerance=0.5, normalize_words=True):
         self.timestep = timestep
         self.sample = sample
         self.temporal_tolerance = temporal_tolerance
         self.normalize_words = normalize_words
 
-    def build(self):
+    def build(self, align_to: Literal["final", "baseline"] = "final"):
         self.accepted_alignments = []
         self.potential_alignments = []
         self.confirmed_alignments = []
+        self.unalignments = []
+
+        if align_to == "baseline":
+            if self.sample.baseline is None:
+                raise ValueError("Baseline is not set in the sample.")
+            self._alignment_sequence = self.sample.baseline
+        elif align_to == "final":
+            self._alignment_sequence = self.sample.final
+        else:
+            raise ValueError("Invalid value for align_to. Use 'final' or 'baseline'.")
+
         self._build_accepted_alignments()
         self._confirm_potential_alignments()
+
         return self
 
     def _get_search_start_index(self, partial: "WordResult"):
         if len(self.accepted_alignments) == 0:
             search_time_start = partial.start - self.temporal_tolerance
-            for f_idx in range(len(self.sample.final)):
-                final_word = self.sample.final[f_idx]
-                if final_word.start > search_time_start:
+            for f_idx in range(len(self._alignment_sequence)):
+                final_word = self._alignment_sequence[f_idx]
+                if final_word.end > search_time_start:
                     return f_idx
-            return len(self.sample.final) - 1
+            return 0
+            return len(self._alignment_sequence) - 1
         last_accepted = self.accepted_alignments[-1]
         return last_accepted.final_word_index + 1
 
     def _get_best_alignment(self, partial: "WordResult", p_idx: int, start_index: int):
-        for f_idx in range(start_index, len(self.sample.final)):
-            final_word = self.sample.final[f_idx]
+        for f_idx in range(start_index, len(self._alignment_sequence)):
+            final_word = self._alignment_sequence[f_idx]
             if is_equal_word(partial, final_word, normalize=self.normalize_words):
                 return True, WordAlignment(self.timestep, p_idx, f_idx)
             if final_word.start > partial.end + self.temporal_tolerance:
@@ -56,8 +71,8 @@ class PredictionAlignment:
         best_alignment = None
         best_alignment_temporal_overlap = 0
 
-        for f_idx in range(start_index, len(self.sample.final)):
-            final_word = self.sample.final[f_idx]
+        for f_idx in range(start_index, len(self._alignment_sequence)):
+            final_word = self._alignment_sequence[f_idx]
             if final_word.start > partial.end:
                 break
             temporal_overlap = min(partial.end, final_word.end) - max(partial.start, final_word.start)
@@ -85,3 +100,5 @@ class PredictionAlignment:
         for wa in self.potential_alignments:
             if wa.final_word_index not in used_final_indices:
                 self.confirmed_alignments.append(wa)
+            else:
+                self.unalignments.append(wa)

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import os
 import json
+from typing import Literal
 
 from src.eval.PredictionAlignment import PredictionAlignment
 
@@ -31,7 +32,9 @@ class SampleResult:
     final: list[WordResult]
     final_messages: list[FinalMessage]
     partials: list[PartialResult]
+    baseline: list[WordResult] = None
     alignments: list[PredictionAlignment] = None
+    transcript: str = None
 
     def __init__(
         self,
@@ -39,11 +42,15 @@ class SampleResult:
         final: list[WordResult],
         final_messages: list[FinalMessage],
         partials: list[PartialResult],
+        baseline: list[WordResult] = None,
+        transcript: list[WordResult] = None,
     ):
         self.sample_id = sample_id
         self.final = final
         self.final_messages = final_messages
         self.partials = partials
+        self.baseline = baseline
+        self.transcript = transcript
 
     @classmethod
     def load_by_id(cls, directory: str, sample_id: str):
@@ -69,6 +76,10 @@ class SampleResult:
                 )
                 for p in data
             ]
+        
+        def parse_transcript(string: str):
+            words = string.split()
+            return [WordResult(word=w, conf=1.0, start=0.0, end=0.0) for w in words]
 
         with open(os.path.join(directory, sample_id + "_final.json"), "r") as f:
             final_data = json.load(f)
@@ -81,18 +92,34 @@ class SampleResult:
         with open(os.path.join(directory, sample_id + "_partial.json"), "r") as f:
             partials_data = json.load(f)
 
+        with open(os.path.join("../out/baseline", sample_id + ".json"), "r") as f:
+            baseline_data = json.load(f)
+        
+        with open(os.path.join("../data/librispeech-pc-test-clean", sample_id, sample_id + ".txt"), "r") as f:
+            transcript_str = f.read().strip()
+            
+
         obj = cls(
             sample_id=sample_id,
             final=parse_word_result_list(final_data),
             final_messages=parse_final_messages(final_messages_data),
             partials=parse_partials(partials_data),
+            baseline=parse_word_result_list(baseline_data),
+            transcript=parse_transcript(transcript_str),
         )
 
         return obj
 
-    def build_alignments(self, normalize_words=True):
+    def build_alignments(self,
+                         normalize_words=True,
+                         align_to: Literal["final", "baseline"]="final",
+                         temporal_tolerance: float=0.5):
         self.alignments = []
         for timestep in range(len(self.partials)):
-            alignment = PredictionAlignment(self, timestep, normalize_words=normalize_words).build()
+            alignment = PredictionAlignment(self,
+                                            timestep,
+                                            normalize_words=normalize_words,
+                                            temporal_tolerance=temporal_tolerance)
+            alignment.build(align_to=align_to)
             self.alignments.append(alignment)
         return self

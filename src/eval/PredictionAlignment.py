@@ -28,7 +28,7 @@ class PredictionAlignment:
         self.temporal_tolerance = temporal_tolerance
         self.normalize_words = normalize_words
 
-    def build(self, align_to: Literal["final", "baseline"] = "final"):
+    def build(self, align_to: Literal["final", "baseline", "mfa"] = "final"):
         self.accepted_alignments = []
         self.potential_alignments = []
         self.confirmed_alignments = []
@@ -38,10 +38,14 @@ class PredictionAlignment:
             if self.sample.baseline is None:
                 raise ValueError("Baseline is not set in the sample.")
             self._alignment_sequence = self.sample.baseline
+        elif align_to == "mfa":
+            if self.sample.mfa is None:
+                raise ValueError("MFA is not set in the sample.")
+            self._alignment_sequence = self.sample.mfa
         elif align_to == "final":
             self._alignment_sequence = self.sample.final
         else:
-            raise ValueError("Invalid value for align_to. Use 'final' or 'baseline'.")
+            raise ValueError("Invalid value for align_to. Use 'final', 'mfa' or 'baseline'.")
 
         self._build_accepted_alignments()
         self._confirm_potential_alignments()

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import os
 import json
+from textgrid import TextGrid, Interval
 from typing import Literal
 
 from src.eval.PredictionAlignment import PredictionAlignment
@@ -35,6 +36,7 @@ class SampleResult:
     baseline: list[WordResult] = None
     alignments: list[PredictionAlignment] = None
     transcript: str = None
+    mfa: list[WordResult] = None
 
     def __init__(
         self,
@@ -44,6 +46,7 @@ class SampleResult:
         partials: list[PartialResult],
         baseline: list[WordResult] = None,
         transcript: list[WordResult] = None,
+        mfa: list[WordResult] = None,
     ):
         self.sample_id = sample_id
         self.final = final
@@ -51,6 +54,7 @@ class SampleResult:
         self.partials = partials
         self.baseline = baseline
         self.transcript = transcript
+        self.mfa = mfa
 
     @classmethod
     def load_by_id(cls, directory: str, sample_id: str):
@@ -80,6 +84,18 @@ class SampleResult:
         def parse_transcript(string: str):
             words = string.split()
             return [WordResult(word=w, conf=1.0, start=0.0, end=0.0) for w in words]
+        
+        def parse_mfa(data: list[Interval]):
+            return [
+                WordResult(
+                    word=w.mark,
+                    conf=1.0,
+                    start=w.minTime,
+                    end=w.maxTime,
+                )
+                for w in data
+                if w.mark != ""
+            ]
 
         with open(os.path.join(directory, sample_id + "_final.json"), "r") as f:
             final_data = json.load(f)
@@ -97,7 +113,9 @@ class SampleResult:
         
         with open(os.path.join("../data/librispeech-pc-test-clean", sample_id, sample_id + ".txt"), "r") as f:
             transcript_str = f.read().strip()
-            
+        
+        tg = TextGrid.fromFile(os.path.join("../data/mfa", sample_id, sample_id + ".TextGrid"), "r")
+        mfa_data = tg.getFirst("words").intervals
 
         obj = cls(
             sample_id=sample_id,
@@ -106,6 +124,7 @@ class SampleResult:
             partials=parse_partials(partials_data),
             baseline=parse_word_result_list(baseline_data),
             transcript=parse_transcript(transcript_str),
+            mfa=parse_mfa(mfa_data),
         )
 
         return obj

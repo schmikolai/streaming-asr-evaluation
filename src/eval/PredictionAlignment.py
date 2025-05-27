@@ -60,7 +60,10 @@ class PredictionAlignment:
         for f_idx in range(start_index, len(self._alignment_sequence)):
             final_word = self._alignment_sequence[f_idx]
             if is_equal_word(partial, final_word, normalize=self.normalize_words):
-                return True, WordAlignment(self.timestep, p_idx, f_idx)
+                has_temporal_overlap = bool(
+                    min(partial.end, final_word.end) - max(partial.start, final_word.start) > 0
+                )
+                return has_temporal_overlap, WordAlignment(self.timestep, p_idx, f_idx)
             if final_word.start > partial.end + self.temporal_tolerance:
                 break
         

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 from src.eval.utils.is_equal_word import is_equal_word
 
 if TYPE_CHECKING:
@@ -28,24 +28,16 @@ class PredictionAlignment:
         self.temporal_tolerance = temporal_tolerance
         self.normalize_words = normalize_words
 
-    def build(self, align_to: Literal["final", "baseline", "mfa"] = "final"):
+    def build(self):
         self.accepted_alignments = []
         self.potential_alignments = []
         self.confirmed_alignments = []
         self.unalignments = []
 
-        if align_to == "baseline":
-            if self.sample.baseline is None:
-                raise ValueError("Baseline is not set in the sample.")
-            self._alignment_sequence = self.sample.baseline
-        elif align_to == "mfa":
-            if self.sample.mfa is None:
-                raise ValueError("MFA is not set in the sample.")
-            self._alignment_sequence = self.sample.mfa
-        elif align_to == "final":
-            self._alignment_sequence = self.sample.final
-        else:
-            raise ValueError("Invalid value for align_to. Use 'final', 'mfa' or 'baseline'.")
+        if self.sample._alignment_sequence is None:
+            raise ValueError("Alignment sequence of SampleResult needs to be set before building the prediction alignment.")
+
+        self._alignment_sequence = self.sample._alignment_sequence
 
         self._build_accepted_alignments()
         self._confirm_potential_alignments()

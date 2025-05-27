@@ -5,6 +5,8 @@ from textgrid import TextGrid, Interval
 from typing import Literal
 
 from src.eval.PredictionAlignment import PredictionAlignment
+from src.eval.metrics.word_first_correct import word_first_correct_response
+from src.eval.metrics.word_first_final import word_first_final_response
 
 @dataclass
 class WordResult:
@@ -37,6 +39,8 @@ class SampleResult:
     alignments: list[PredictionAlignment] = None
     transcript: str = None
     mfa: list[WordResult] = None
+
+    _alignment_sequence: list[WordResult] = None
 
     def __init__(
         self,
@@ -131,14 +135,39 @@ class SampleResult:
 
     def build_alignments(self,
                          normalize_words=True,
-                         align_to: Literal["final", "baseline"]="final",
+                         align_to: Literal["final", "baseline", "mfa"]="final",
                          temporal_tolerance: float=0.5):
+        if align_to == "baseline":
+            if self.baseline is None:
+                raise ValueError("Baseline is not set in the sample.")
+            self._alignment_sequence = self.baseline
+        elif align_to == "mfa":
+            if self.mfa is None:
+                raise ValueError("MFA is not set in the sample.")
+            self._alignment_sequence = self.mfa
+        elif align_to == "final":
+            self._alignment_sequence = self.final
+        else:
+            raise ValueError("Invalid value for align_to. Use 'final', 'mfa' or 'baseline'.")
+        
         self.alignments = []
         for timestep in range(len(self.partials)):
             alignment = PredictionAlignment(self,
                                             timestep,
                                             normalize_words=normalize_words,
                                             temporal_tolerance=temporal_tolerance)
-            alignment.build(align_to=align_to)
+            alignment.build()
             self.alignments.append(alignment)
         return self
+    
+    def word_first_corrects(self):
+        return [
+            word_first_correct_response(self._alignment_sequence, self.partials, i, self.alignments)
+            for i in range(len(self._alignment_sequence))
+        ]
+    
+    def word_first_finals(self):
+        return [
+            word_first_final_response(self._alignment_sequence, self.partials, i, self.alignments)
+            for i in range(len(self._alignment_sequence))
+        ]

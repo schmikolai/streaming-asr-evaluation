@@ -192,15 +192,14 @@ class SampleResult:
         else:
             raise ValueError("Invalid value for align_to. Use 'final', 'final_mfa', 'mfa' or 'baseline'.")
         
-        def build_alignment(timestep: int):
-            alignment = PredictionAlignment(self, timestep, normalize_words=normalize_words, temporal_tolerance=temporal_tolerance)
+        self.alignments = []
+        for timestep in range(len(self.partials)):
+            alignment = PredictionAlignment(self,
+                                            timestep,
+                                            normalize_words=normalize_words,
+                                            temporal_tolerance=temporal_tolerance)
             alignment.build()
-            return alignment
-
-        self.alignments = Parallel(n_jobs=-1, prefer="processes")(
-            delayed(build_alignment)(timestep) for timestep in range(len(self.partials))
-        )
-
+            self.alignments.append(alignment)
         return self
     
     def word_first_corrects(self):

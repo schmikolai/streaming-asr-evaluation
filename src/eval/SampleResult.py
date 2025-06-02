@@ -3,6 +3,7 @@ import os
 import json
 from textgrid import TextGrid, Interval
 from typing import Literal
+from joblib import Parallel, delayed
 
 from src.eval.PredictionAlignment import PredictionAlignment
 from src.eval.metrics.word_first_correct import word_first_correct_response
@@ -43,6 +44,8 @@ class SampleResult:
     final_mfa: list[WordResult] = None
 
     _alignment_sequence: list[WordResult] = None
+    wfc = None
+    wff = None
 
     def __init__(
         self,
@@ -189,24 +192,27 @@ class SampleResult:
         else:
             raise ValueError("Invalid value for align_to. Use 'final', 'final_mfa', 'mfa' or 'baseline'.")
         
-        self.alignments = []
-        for timestep in range(len(self.partials)):
-            alignment = PredictionAlignment(self,
-                                            timestep,
-                                            normalize_words=normalize_words,
-                                            temporal_tolerance=temporal_tolerance)
+        def build_alignment(timestep: int):
+            alignment = PredictionAlignment(self, timestep, normalize_words=normalize_words, temporal_tolerance=temporal_tolerance)
             alignment.build()
-            self.alignments.append(alignment)
+            return alignment
+
+        self.alignments = Parallel(n_jobs=-1, prefer="processes")(
+            delayed(build_alignment)(timestep) for timestep in range(len(self.partials))
+        )
+
         return self
     
     def word_first_corrects(self):
-        return [
+        self.wfc = [
             word_first_correct_response(self._alignment_sequence, self.partials, i, self.alignments)
             for i in range(len(self._alignment_sequence))
         ]
+        return self.wfc
     
     def word_first_finals(self):
-        return [
+        self.wff = [
             word_first_final_response(self._alignment_sequence, self.partials, i, self.alignments)
             for i in range(len(self._alignment_sequence))
         ]
+        return self.wff

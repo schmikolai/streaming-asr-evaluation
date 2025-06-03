@@ -204,7 +204,7 @@ class SampleResult:
     
     def word_first_corrects(self):
         self.wfc = [
-            word_first_correct_response(self._alignment_sequence, self.partials, i, self.alignments)
+            word_first_correct_response(i, self._alignment_sequence, self.partials, self.alignments)
             for i in range(len(self._alignment_sequence))
         ]
         return self.wfc

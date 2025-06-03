@@ -91,8 +91,8 @@ class Stream:
                     name=f"transcription_task_stream_{self.id}"
                 )
                 self.transcription_tasks.add(task)
-                task.add_done_callback(self.transcription_tasks.discard)
                 task.add_done_callback(self.check_for_final)
+                task.add_done_callback(self.transcription_tasks.discard)
 
 
     def end_stream(self) -> None:

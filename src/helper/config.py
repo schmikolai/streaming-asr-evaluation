@@ -1,10 +1,9 @@
 """config file that reads all config from .env or CMD environment for app"""
 
 import os
-
+import argparse
 import yaml
 from faster_whisper.tokenizer import _LANGUAGE_CODES
-import argparse
 import logging
 
 logger = logging.getLogger(__name__)
@@ -70,12 +69,13 @@ def read_config(config_yml_path: str) -> dict:
         "supported_language_codes": list(_LANGUAGE_CODES),
     }
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "-c", "--config", type=str, default="configs/default.yml", help="Path to the config file"
 )
 
-args = parser.parse_args()
+args, _ = parser.parse_known_args()
 
 # config_path = os.path.join(os.getcwd(), "configs/default.yml")
 config_path = os.path.join(os.getcwd(), args.config)

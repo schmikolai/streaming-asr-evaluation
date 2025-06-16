@@ -107,7 +107,7 @@ class AssemblyAIStream(Stream):
         if turn_event.turn_is_formatted:
             self.output_handler.send_final(result["result"])
         else:
-            self.output_handler.send_partial(result, 0.0, 0.0)
+            self.output_handler.send_partial(result, 0.0, result["result"][-1]["end"] if len(result["result"]) else None)
 
     def on_terminated(self, c, event: TerminationEvent):
         logger.info(

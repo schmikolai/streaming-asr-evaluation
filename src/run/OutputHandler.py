@@ -23,10 +23,14 @@ class OutputHandler:
         self.start_time = time.perf_counter() + offset
         logger.info("OutputHandler timer initialized at %f with offset %f", self.start_time, offset)
 
-    def send_partial(self, words, window_time_start, window_time_end):
+    def send_partial(self, words, window_time_start=None, window_time_end=None):
         """
         Send partial text to the output.
         """
+        if window_time_start is None:
+            window_time_start = 0.0
+        if window_time_end is None:
+            window_time_end = time.perf_counter() - self.start_time
         prediction = {
             "result": words,
             "window": [window_time_start, window_time_end],

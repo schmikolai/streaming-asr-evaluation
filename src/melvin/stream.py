@@ -144,19 +144,18 @@ class Stream:
             )
 
 
-    def build_result_from_words(self, words: List[Word],save=True) -> Dict:
-        overall_transcribed_seconds = self.previous_byte_count / BYTES_PER_SECOND
-
-        cutoff_timestamp = 0
-        if len(self.final_transcriptions) > 0:
-            cutoff_timestamp = self.final_transcriptions[-1]["result"][-1]["end"]
+    def build_result_from_words(self,
+                                words: List[Word],
+                                save=True,
+                                window_start_time=0,
+                                last_final_time=0) -> Dict:
 
         result = {"result": [], "text": ""}
         for word in words:
-            start = float(f"{word.start:.6f}") + overall_transcribed_seconds
-            end = float(f"{word.end:.6f}")  + overall_transcribed_seconds
+            start = float(f"{word.start:.6f}") + window_start_time
+            end = float(f"{word.end:.6f}")  + window_start_time
             conf = float(f"{word.probability:.6f}")
-            if end <= cutoff_timestamp + 0.01 and save:
+            if end <= last_final_time + 0.01 and save:
                 continue
             result["result"].append(
                 {

@@ -20,7 +20,7 @@ class Dataset:
             self.entries = [entry for entry in self.entries if entry in dataset_ids]
         self.entries_iter = iter(self.entries)
 
-        logger.info(f"Loaded dataset {dataset_name} with {len(entries)} elements")
+        logger.info(f"Loaded dataset {dataset_name} with {len(self.entries)} elements")
 
     def __iter__(self):
         return self

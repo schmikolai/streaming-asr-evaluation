@@ -61,11 +61,14 @@ class LogFormatter(logging.Formatter):
         )
 
 
-def init_logger() -> None:
+def init_logger(level="INFO") -> None:
     """Set the LogFormatter as a formatter for the global logger"""
+    levlelMap = logging.getLevelNamesMapping()
+    if level not in levlelMap:
+        raise ValueError(f"Invalid log level: {level}. Valid levels are: {list(levlelMap.keys())}")
     logging.basicConfig(
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG,
+        level=levlelMap.get(level),
     )
     console = logging.StreamHandler()
     # set a format which is simpler for console use

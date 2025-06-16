@@ -1,5 +1,7 @@
 import time
 from pydub.utils import re
+import logging
+logger = logging.getLogger(__name__)
 
 def norm_word(word) -> str:
     text = word.lower()
@@ -19,6 +21,7 @@ class OutputHandler:
         Initialize the timer for the output handler.
         """
         self.start_time = time.perf_counter() + offset
+        logger.info("OutputHandler timer initialized at %f with offset %f", self.start_time, offset)
 
     def send_partial(self, words, window_time_start, window_time_end):
         """

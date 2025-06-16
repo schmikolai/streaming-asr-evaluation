@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 class ModelHandler:
     """Class to handle the models"""
 
-    def __init__(self, model_path=CONFIG["model_path"]):
+    def __init__(self, model_path=CONFIG.get("model_path", "small")):
         self.model_path = model_path
 
     def setup_model(self, model_to_load: str) -> bool:

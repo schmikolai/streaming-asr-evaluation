@@ -8,9 +8,12 @@ def draw(sample,
     window_end = window_start + window_length
 
     words = sample._alignment_sequence[window_start:window_end]
+    print(words)
 
     window_start_t = words[0].start
     window_end_t = words[-1].end
+
+    print(f"Window start: {window_start_t}, Window end: {window_end_t}")
 
     # Filter predictions and keep original indices
     indexed_predictions = [
@@ -18,6 +21,7 @@ def draw(sample,
         if window_start_t <= p.window[1] and (p.observation_time <= window_end_t or p.window[1] <= window_end_t)
     ]
     indexed_predictions = indexed_predictions[::-1]  # Reverse for display
+    print(indexed_predictions)
 
     # Final word mapping (global indices to x/y coordinates)
     final_word_positions = {

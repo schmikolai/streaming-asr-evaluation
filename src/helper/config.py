@@ -86,4 +86,5 @@ if os.path.exists(config_path):
     CONFIG = read_config(config_path)
     logger.info(f"Config loaded from {config_path}")
 else:
-    raise RuntimeWarning("No config file found")
+    CONFIG = {}
+    logger.warning("No config file found")

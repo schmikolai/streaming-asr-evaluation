@@ -1,19 +1,21 @@
 from matplotlib import pyplot as plt
+import matplotlib.gridspec as gridspec
 from matplotlib.patches import Rectangle
+
+from src.eval.utils.draw_wave import draw_wave
 
 def draw(sample,
          window_start,
          window_length,
-         DRAW_CONFIRMED_ALIGNMENTS=False):
+         DRAW_CONFIRMED_ALIGNMENTS=False,
+         wave=False,
+         ):
     window_end = window_start + window_length
 
     words = sample._alignment_sequence[window_start:window_end]
-    print(words)
 
-    window_start_t = words[0].start
+    window_start_t = 0.0 if window_start == 0 else words[0].start
     window_end_t = words[-1].end
-
-    print(f"Window start: {window_start_t}, Window end: {window_end_t}")
 
     # Filter predictions and keep original indices
     indexed_predictions = [
@@ -21,7 +23,6 @@ def draw(sample,
         if window_start_t <= p.window[1] and (p.observation_time <= window_end_t or p.window[1] <= window_end_t)
     ]
     indexed_predictions = indexed_predictions[::-1]  # Reverse for display
-    print(indexed_predictions)
 
     # Final word mapping (global indices to x/y coordinates)
     final_word_positions = {
@@ -34,8 +35,16 @@ def draw(sample,
 
     # Determine max observation time for x-axis limit
     max_obs_time = max(window_end_t, max(p.observation_time for _, p in indexed_predictions))
+    window_end_t = max_obs_time + 0.5
 
-    fig, ax = plt.subplots(figsize=(30, 8))
+    if wave:
+        fig = plt.figure(figsize=(30, 12))
+        gs = gridspec.GridSpec(2, 1, height_ratios=[1, 3])
+        ax = fig.add_subplot(gs[1])
+        ax_wave = fig.add_subplot(gs[0], sharex=ax)
+        draw_wave(sample.sample_id, window_start_t, window_end_t, ax=ax_wave)
+    else:
+        fig, ax = plt.subplots(figsize=(30, 8))
 
     for row_index, (original_index, partial) in enumerate(indexed_predictions):
         win_start, win_end = partial.window
@@ -110,11 +119,12 @@ def draw(sample,
         ax.axvline(start, color="black", linestyle="--", linewidth=0.5, alpha=0.5)
         ax.axvline(end, color="black", linestyle="--", linewidth=0.5, alpha=0.5)
 
-    window_end_t = max_obs_time + 0.5
-
     # Axes setup
     ax.set_xlim(window_start_t, window_end_t)
     ax.set_ylim(0, word_y + 2)
     ax.set_yticks([i + 0.5 for i in range(len(indexed_predictions))])
     ax.set_yticklabels([str(idx) for idx, _ in indexed_predictions])
     ax.xaxis.tick_top()
+    fig.subplots_adjust(left=0.05)
+
+    return window_start_t, window_end_t

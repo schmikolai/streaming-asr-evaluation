@@ -13,7 +13,6 @@ from assemblyai.streaming.v3 import (
     StreamingError,
     StreamingEvents,
     StreamingParameters,
-    StreamingSessionParameters,
     TerminationEvent,
     TurnEvent,
 )
@@ -35,7 +34,7 @@ class AssemblyAIStream(Stream):
 
         api_key = os.getenv("ASSEMBLYAI_API_KEY")
         if not api_key:
-            raise ValueError("API key not found in environment variables.")
+            raise ValueError(" Please set AssemblyAI API key as ASSEMBLYAI_API_KEY environment variables.")
 
         self.client = StreamingClient(
             StreamingClientOptions(

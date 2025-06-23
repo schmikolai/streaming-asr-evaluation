@@ -36,7 +36,7 @@ class RealtimeRunner:
                 whisper_transcriber=self.stream_transcriber,
             )
             transcriber = TimedStreamingTranscriber(stream, out, chunk_length_ms=50)
-            y_pred = await transcriber.transcribe(audio_bytes)
+            await transcriber.transcribe(audio_bytes)
             with open(os.path.join(self.out_dir, f"{id}_final.json"), "w") as f:
                 json.dump(out.final_words, f)
             with open(

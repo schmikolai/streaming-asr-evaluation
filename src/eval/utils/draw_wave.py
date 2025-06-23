@@ -22,7 +22,7 @@ def draw_wave(sample_id,
     audio_bytes = Dataset.mp3_to_waveform(audio_path, sample_rate)
 
     start_index = int(start_time * sample_rate * bytes_per_sample)
-    end_index = int(end_time * sample_rate * bytes_per_sample)
+    end_index = int(((end_time * sample_rate * bytes_per_sample) // bytes_per_sample) * bytes_per_sample)
     audio_bytes = audio_bytes[start_index:end_index]
 
     audio_samples = np.frombuffer(audio_bytes, dtype=np.int16)

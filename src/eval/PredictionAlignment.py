@@ -12,6 +12,7 @@ class WordAlignment:
     partial_word_index: int
     final_word_index: int
 
+
 class PredictionAlignment:
     accepted_alignments: list[WordAlignment] = []
     potential_alignments: list[WordAlignment] = []
@@ -22,10 +23,18 @@ class PredictionAlignment:
 
     _alignment_sequence: list["WordResult"] = []
 
-    def __init__(self, sample: "SampleResult", timestep: int, temporal_tolerance=0.5, normalize_words=True):
+    def __init__(
+        self,
+        sample: "SampleResult",
+        timestep: int,
+        temporal_tolerance=0.5,
+        accepted_tolerance=1.0,
+        normalize_words=True,
+    ):
         self.timestep = timestep
         self.sample = sample
         self.temporal_tolerance = temporal_tolerance
+        self.accepted_tolerance = accepted_tolerance
         self.normalize_words = normalize_words
 
     def build(self):
@@ -35,7 +44,9 @@ class PredictionAlignment:
         self.unalignments = []
 
         if self.sample._alignment_sequence is None:
-            raise ValueError("Alignment sequence of SampleResult needs to be set before building the prediction alignment.")
+            raise ValueError(
+                "Alignment sequence of SampleResult needs to be set before building the prediction alignment."
+            )
 
         self._alignment_sequence = self.sample._alignment_sequence
 
@@ -60,13 +71,11 @@ class PredictionAlignment:
         for f_idx in range(start_index, len(self._alignment_sequence)):
             final_word = self._alignment_sequence[f_idx]
             if is_equal_word(partial, final_word, normalize=self.normalize_words):
-                has_temporal_overlap = bool(
-                    min(partial.end, final_word.end) - max(partial.start, final_word.start) > 0
-                )
+                has_temporal_overlap = bool(min(partial.end, final_word.end) - max(partial.start, final_word.start) > -self.temporal_tolerance)
                 return has_temporal_overlap, WordAlignment(self.timestep, p_idx, f_idx)
             if final_word.start > partial.end + self.temporal_tolerance:
                 break
-        
+
         best_alignment = None
         best_alignment_temporal_overlap = 0
 
@@ -78,10 +87,10 @@ class PredictionAlignment:
             if temporal_overlap > best_alignment_temporal_overlap:
                 best_alignment_temporal_overlap = temporal_overlap
                 best_alignment = WordAlignment(self.timestep, p_idx, f_idx)
-        
+
         if best_alignment_temporal_overlap > 0:
             return False, best_alignment
-        
+
         return False, None
 
     def _build_accepted_alignments(self):

@@ -118,6 +118,9 @@ def draw(sample,
         ax.text((start + end) / 2, word_y + 1.3, f"{window_start + i}", ha="center", va="center", fontsize=10, color="black")
         ax.axvline(start, color="black", linestyle="--", linewidth=0.5, alpha=0.5)
         ax.axvline(end, color="black", linestyle="--", linewidth=0.5, alpha=0.5)
+        if wave:
+            ax_wave.axvline(start, color="black", linestyle="--", linewidth=0.5, alpha=0.5)
+            ax_wave.axvline(end, color="black", linestyle="--", linewidth=0.5, alpha=0.5)
 
     # Axes setup
     ax.set_xlim(window_start_t, window_end_t)

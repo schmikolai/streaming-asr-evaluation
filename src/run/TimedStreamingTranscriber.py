@@ -1,7 +1,6 @@
 from src.run.Stream import Stream
 from src.helper.byte_iterator import iter_chunks
 from src.run.OutputHandler import OutputHandler
-from tqdm import tqdm
 import time
 import asyncio
 

@@ -174,7 +174,9 @@ class SampleResult:
     def build_alignments(self,
                          normalize_words=True,
                          align_to: Literal["final", "baseline", "mfa", "final_mfa"]="final",
-                         temporal_tolerance: float=0.5):
+                         temporal_tolerance: float=0.5,
+                         accepted_tolerance: float=1.0,
+                        ):
         if align_to == "baseline":
             if self.baseline is None:
                 raise ValueError("Baseline is not set in the sample.")

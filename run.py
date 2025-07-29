@@ -46,7 +46,7 @@ outdir = outdir_from_setup(
 logger.info(outdir)
 
 async def run():
-    runner = RealtimeRunner(dataset, outdir, method=method, stream_transcriber=w)
+    runner = RealtimeRunner(dataset, method=method, stream_transcriber=w, out_dir=outdir)
     await runner.run()
 
 

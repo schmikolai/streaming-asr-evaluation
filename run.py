@@ -10,6 +10,10 @@ from src.helper.write_result import outdir_from_setup
 from src.helper.logger import init_logger, set_global_loglevel
 from src.helper.config import CONFIG
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 init_logger()
 
 log_level = CONFIG.get("log_level", None)

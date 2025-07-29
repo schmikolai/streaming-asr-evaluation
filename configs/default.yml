@@ -11,6 +11,8 @@ transcription_default:
   condition_on_previous_text: False
 
 experiment:
+  # method: melvin, assemblyai
+  method: melvin
   # model: tiny, small, medium, large, large-v3, large-v3-turbo (https://huggingface.co/Systran)
   model: large-v3-turbo
   # transcription_interval (float): Buffers incoming audio chunks until the specified audio time has accumulated.

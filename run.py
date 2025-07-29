@@ -25,7 +25,14 @@ logger.info(f"Running experiment {experiment}")
 
 dataset = Dataset(experiment.get("dataset", "librispeech-pc-test-clean"), dataset_ids=experiment.get("dataset_ids", None))
 
-w = StreamTranscriber.for_gpu(experiment["model"], [0])
+method = experiment.get("method", "melvin")
+
+if method not in ["melvin", "assemblyai"]:
+    raise ValueError(f"Method {method} is not supported. Choose 'melvin' or 'assemblyai'.")
+
+w = None
+if method == "melvin":
+    w = StreamTranscriber.for_gpu(experiment["model"], [0])
 
 outdir = outdir_from_setup(
     dataset,
@@ -35,7 +42,7 @@ outdir = outdir_from_setup(
 logger.info(outdir)
 
 async def run():
-    runner = RealtimeRunner(dataset, outdir, method="melvin", stream_transcriber=w)
+    runner = RealtimeRunner(dataset, outdir, method=method, stream_transcriber=w)
     await runner.run()
 
 

@@ -1,0 +1,15 @@
+# config.yml
+# This file is used to configure the service locally for development
+
+log_level: INFO
+
+# Transcription Configuration, defaults set for websocket_stream and rest_runner
+transcription_default:
+  # all valid faster-whisper transcription settings are allowed here
+  # see "src/helper/transcription_settings.py"
+  vad_filter: True
+  condition_on_previous_text: False
+
+experiment:
+  # method: melvin, assemblyai
+  method: assemblyai

@@ -28,7 +28,7 @@ def outdir_from_setup(
     return "out/{}_{}_{}".format(
         time.strftime("%Y-%m-%d_%H-%M-%S"),
         dataset.dataset_name,
-        whisper_transcriber._model_name,
+        whisper_transcriber._model_name if whisper_transcriber else "assemblyai",
     )
 
 def write_result(

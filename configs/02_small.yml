@@ -1,0 +1,23 @@
+# config.yml
+# This file is used to configure the service locally for development
+
+log_level: INFO
+
+# Transcription Configuration, defaults set for websocket_stream and rest_runner
+transcription_default:
+  # all valid faster-whisper transcription settings are allowed here
+  # see "src/helper/transcription_settings.py"
+  vad_filter: True
+  condition_on_previous_text: False
+
+experiment:
+  # method: melvin, assemblyai
+  method: melvin
+  # model: tiny, small, medium, large, large-v3, large-v3-turbo (https://huggingface.co/Systran)
+  model: small
+  # final_transcription_threshold (int): The number of words after which a final transcription is printed.
+  final_transcription_threshold: 6
+  # final_publish_threshold_seconds (float): The number of seconds after which a final transcription is forcibly published.
+  final_publish_threshold_seconds: 5.0
+  # max_window_size_seconds (float): The maximum size of the sliding window in seconds.
+  max_window_size_seconds: 15.0

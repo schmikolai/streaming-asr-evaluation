@@ -43,24 +43,6 @@ class Color:
         ][random.randint(0, 6)]
 
 
-class LogFormatter(logging.Formatter):
-    FORMATS = {
-        logging.DEBUG: Color.BLUE,
-        logging.INFO: Color.WHITE,
-        logging.WARNING: Color.BRIGHT_YELLOW,
-        logging.ERROR: Color.YELLOW,
-        logging.CRITICAL: Color.RED,
-    }
-
-    def format(self, record: logging.LogRecord) -> str:
-        """Format the string and set its color based on the log level"""
-        return (
-            self.FORMATS.get(record.levelno, Color.WHITE)
-            + super().format(record)
-            + Color.ENDC
-        )
-
-
 def init_logger(level="INFO") -> None:
     """Set the LogFormatter as a formatter for the global logger"""
     levlelMap = logging.getLevelNamesMapping()
@@ -73,7 +55,7 @@ def init_logger(level="INFO") -> None:
     console = logging.StreamHandler()
     # set a format which is simpler for console use
     # Note: identifier is only given by some classes that use this similar to a traceID
-    formatter = LogFormatter(
+    formatter = logging.Formatter(
         "[%(asctime)s %(name)s:%(lineno)d] %(levelname)s %(message)s"
     )
     # tell the handler to use this format

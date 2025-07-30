@@ -2,14 +2,19 @@ from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.patches import Rectangle
 
+from typing import Literal
+
 from src.eval.utils.draw_wave import draw_wave
 
 def draw(sample,
          window_start,
          window_length,
-         DRAW_CONFIRMED_ALIGNMENTS=False,
+         alignment: Literal[None, "confirmed", "accepted"] = "accepted",
          wave=False,
          ):
+    
+    DRAW_CONFIRMED_ALIGNMENTS = alignment == "confirmed"
+
     window_end = window_start + window_length
 
     words = sample._alignment_sequence[window_start:window_end]
@@ -78,6 +83,9 @@ def draw(sample,
                 ax.text((word.start + word.end) / 2, row_index + 0.5, word.word,
                         ha="center", va="center", fontsize=9, color="darkgreen")
                 
+                if not alignment:
+                    continue
+
                 # Draw alignment line
                 wa = None
                 accepted = False

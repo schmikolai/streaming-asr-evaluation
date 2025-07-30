@@ -94,6 +94,9 @@ class Stream:
                 task.add_done_callback(self.check_for_final)
                 task.add_done_callback(self.transcription_tasks.discard)
 
+    def start_stream(self) -> None:
+        pass
+
 
     def end_stream(self) -> None:
         """Function to end the stream and send the final transcription"""

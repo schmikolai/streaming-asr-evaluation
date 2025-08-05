@@ -4,11 +4,14 @@ import json
 from textgrid import TextGrid, Interval
 from typing import Literal
 from joblib import Parallel, delayed
+import warnings
+
+import openwer
 
 from src.eval.PredictionAlignment import PredictionAlignment
 from src.eval.metrics.word_first_correct import word_first_correct_response
 from src.eval.metrics.word_first_final import word_first_final_response
-import warnings
+from src.helper.word_sequence import word_sequence_to_string
 
 @dataclass
 class WordResult:
@@ -44,6 +47,7 @@ class SampleResult:
     final_mfa: list[WordResult] = None
 
     _alignment_sequence: list[WordResult] = None
+    _wer = None
     wfc = None
     wff = None
 
@@ -217,3 +221,13 @@ class SampleResult:
             for i in range(len(self._alignment_sequence))
         ]
         return self.wff
+    
+    def word_error_rate(self):
+        if self._wer is not None:
+            return self._wer.word_error_rate()
+        
+        if self._alignment_sequence is None:
+            raise ValueError("Alignment sequence is not set. Call build_alignments() first.")
+        
+        self._wer = openwer.process_words("en", word_sequence_to_string(self.mfa), word_sequence_to_string(self.final))
+        return self._wer.word_error_rate()

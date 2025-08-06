@@ -199,7 +199,10 @@ class Stream:
                 if segment.words is None:
                     continue
                 for word in segment.words:
-                    new_words.append(word)
+                    if word.word:
+                        word.start += window_start_timestamp
+                        word.end += window_start_timestamp
+                        new_words.append(word)
 
             if len(self.agreement.unconfirmed) > 0:
                 # Hacky workaround for doubled word between finals

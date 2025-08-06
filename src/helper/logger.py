@@ -45,12 +45,12 @@ class Color:
 
 def init_logger(level="INFO") -> None:
     """Set the LogFormatter as a formatter for the global logger"""
-    levlelMap = logging.getLevelNamesMapping()
-    if level not in levlelMap:
-        raise ValueError(f"Invalid log level: {level}. Valid levels are: {list(levlelMap.keys())}")
+    levelMap = logging.getLevelNamesMapping()
+    if level not in levelMap:
+        raise ValueError(f"Invalid log level: {level}. Valid levels are: {list(levelMap.keys())}")
     logging.basicConfig(
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=levlelMap.get(level),
+        level=levelMap.get(level),
     )
     console = logging.StreamHandler()
     # set a format which is simpler for console use

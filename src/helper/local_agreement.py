@@ -18,14 +18,18 @@ class LocalAgreement:
         self.confirmed_contains_sentence_end = False
 
     def flush_confirmed(self, word_count=None) -> List[Word]:
+        self.logger.debug("flush_confirmed called with word_count=%s", word_count)
         if word_count is None:
+            self.logger.debug("No word_count provided, flushing all %i confirmed words", len(self.confirmed))
             word_count = len(self.confirmed)
         flushed = self.confirmed[:word_count]
         self.confirmed = self.confirmed[word_count:]
         self.confirmed_contains_sentence_end = any([symbol in self.confirmed for symbol in SENTENCE_TERMINATION_CHARACTERS])
+        self.logger.debug("Flushed %i words, remaining confirmed words: %i", len(flushed), len(self.confirmed))
         return  flushed
 
     def flush_at_sentence_end(self) -> List[Word]:
+        self.logger.debug("flush_at_sentence_end called")
         # Get highest index of allowed termination symbol
         i = len(self.confirmed) - 1
         ind = None

@@ -159,7 +159,7 @@ class SampleResult:
                 final_mfa_data = tg.getFirst("words").intervals
                 final_mfa = parse_mfa(final_mfa_data)
             else:
-                warnings.warn(f"Final MFA file not found: {final_mfa_path}")
+                # warnings.warn(f"Final MFA file not found: {final_mfa_path}")
                 final_mfa = None
 
             obj = cls(

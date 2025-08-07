@@ -2,6 +2,7 @@ import os
 from src.eval.SampleResult import SampleResult
 from typing import List
 from tqdm import tqdm
+from joblib import Parallel, delayed
 
 
 class Run:
@@ -21,15 +22,32 @@ class Run:
         # get ids from the first part of the filename separated by "_"
         file_ids = [f.split("_")[0] for f in files]
 
-        samples = [SampleResult.load_by_id(directory, file_id) for file_id in file_ids]
+        samples = list(tqdm(
+            Parallel(n_jobs=16)(
+                delayed(lambda file_id: SampleResult.load_by_id(directory, file_id))(file_id)
+                for file_id in file_ids
+            ),
+            total=len(file_ids),
+            desc="Loading samples"
+            ))
         return samples
     
     def build_metrics(self, normalize_words: bool = True, align_to: str = "mfa", temporal_tolerance: float = 0.1):
-        for sample in tqdm(self.samples, desc="Building metrics"):
+        processed_samples = []
+
+        def process_sample(sample: SampleResult):
             sample.build_alignments(normalize_words=normalize_words, align_to=align_to, temporal_tolerance=temporal_tolerance)
             sample.word_error_rate()
             sample.word_first_corrects()
             sample.word_first_finals()
+            processed_samples.append(sample)
+
+        Parallel(n_jobs=16, backend="threading")(
+            delayed(process_sample)(sample)
+            for sample in tqdm(self.samples, desc="Processing samples")
+        )
+
+        self.samples = processed_samples
         
         self.wer = sum(sample.word_error_rate() for sample in self.samples) / len(self.samples)
         

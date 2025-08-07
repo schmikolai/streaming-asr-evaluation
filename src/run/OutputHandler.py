@@ -1,5 +1,6 @@
 import time
 from pydub.utils import re
+from src.helper.word_sequence import word_dict_sequence_to_string
 import logging
 logger = logging.getLogger(__name__)
 
@@ -55,3 +56,16 @@ class OutputHandler:
                 self.final_words.pop(i)
             else:
                 i += 1
+
+class DebugOutputHandler(OutputHandler):
+    def send_partial(self, words, window_time_start=None, window_time_end=None):
+        super().send_partial(words, window_time_start, window_time_end)
+        partial = self.partial_predictions[-1]
+        print(f"{partial['observation_time']:6.2f}: Partial - {words['result'][0]['start']} {words['text']}")
+
+    def send_final(self, words, reason: str = None):
+        super().send_final(words, reason)
+        final = self.final_messages[-1]
+        print(f"\n{final['observation_time']:6.2f}: {reason} - {word_dict_sequence_to_string(words)}")
+        last_final_word = final["result"][-1]
+        print(f"{last_final_word['start']:.2f} - {last_final_word['word']} - {last_final_word['end']:.2f}\n")

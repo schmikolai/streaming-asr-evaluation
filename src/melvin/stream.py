@@ -162,7 +162,6 @@ class Stream:
 
         try:
             start_time = time.time()
-            result: str = "Missing data"
             self.bytes_received_since_last_transcription = 0
 
             window_start_timestamp = self.previous_byte_count / BYTES_PER_SECOND
@@ -184,14 +183,12 @@ class Stream:
                         word.end += window_start_timestamp
                         new_words.append(word)
 
-            if len(self.agreement.unconfirmed) > 0:
-                # Hacky workaround for doubled word between finals
-                if len(new_words) > 0 and len(self.final_transcriptions) > 0:
-                    while new_words[0].start < self.final_transcriptions[-1]["result"][-1]["start"] or (
-                        new_words[0].word == self.final_transcriptions[-1]["result"][-1]["word"]
-                        and new_words[0].start < self.final_transcriptions[-1]["result"][-1]["end"]
-                    ):
-                        new_words.pop(0)
+            if len(new_words) > 0 and len(self.final_transcriptions) > 0:
+                while (new_words[0].start < self.final_transcriptions[-1]["result"][-1]["end"]) or (
+                    new_words[0].word == self.final_transcriptions[-1]["result"][-1]["word"]
+                    # and new_words[0].start < self.final_transcriptions[-1]["result"][-1]["end"]
+                ):
+                    new_words.pop(0)
 
             if not skip_send:
                 self.output_handler.send_partial(
